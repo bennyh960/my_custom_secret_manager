@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Redirecting...</title>
+    <script type="text/javascript">
+      // Redirect all 404s to index.html preserving query params
+      var path = window.location.pathname + window.location.search;
+      window.location.href = "/my_custom_secret_manager/?redirect=" + encodeURIComponent(path);
+    </script>
+  </head>
+  <body></body>
+</html>
