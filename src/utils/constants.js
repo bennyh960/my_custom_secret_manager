@@ -1,5 +1,5 @@
 export const DROPBOX_CLIENT_ID = import.meta.env.VITE_DROPBOX_CLIENT_ID;
-
+export const NODE_ENV = import.meta.env.VITE_NODE_ENV;
 export const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const storageMap = {
@@ -13,6 +13,6 @@ export const storageMap = {
 };
 
 export const routes = {
-  dropboxAuthCallback: "/dropbox/callback",
+  dropboxAuthCallback: "",
   test: "/test",
 };

@@ -2,7 +2,7 @@ import { BASE_URL, DROPBOX_CLIENT_ID, routes, storageMap } from "../utils/consta
 
 // ============ Dropbox Auth Service ============
 const dropboxAuthService = {
-  redirect_uri: BASE_URL + routes.dropboxAuthCallback,
+  redirect_uri: BASE_URL + routes.dropboxAuthCallback, // must match Dropbox app settings and has limittion due to github pages
   async authUtilgeneratePKCE() {
     const array = new Uint8Array(64);
     crypto.getRandomValues(array);
@@ -91,7 +91,9 @@ const dropboxAuthService = {
     const refresh_token = localStorage.getItem(storageMap.db_refresh_token);
 
     if (!refresh_token) {
-      this.authenticate();
+      alert("Session expires. Please authenticate again.");
+      await this.authenticate();
+      return;
       // throw new Error("Refresh token not found. Please authenticate again.");
     }
 
