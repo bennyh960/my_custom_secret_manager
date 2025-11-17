@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useCallback, useState } from "react";
 import dropboxService from "../services/dropboxService";
 import { NODE_ENV, storageMap } from "../utils/constants";
 import dropboxAuthService from "../services/dropboxAuthService";
@@ -11,7 +11,7 @@ const AuthProvider = ({ children }) => {
   const [userPath, setUserPath] = useState("");
   const [isLoading, setIsLoading] = useState(true); // Add loading state
 
-  const initializeAuth = async () => {
+  const initializeAuth = useCallback(async () => {
     setIsLoading(true);
 
     const params = new URLSearchParams(window.location.search);
@@ -44,7 +44,7 @@ const AuthProvider = ({ children }) => {
     console.log("No authentication found, redirecting to Dropbox...");
     setIsLoading(false);
     await dropboxAuthService.authenticate();
-  };
+  }, []);
 
   const login = async (password, path) => {
     // const response1 = await dropboxService.listFiles(""); // verify path exists

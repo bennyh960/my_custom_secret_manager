@@ -76,7 +76,7 @@ const dropboxAuthService = {
 
       if (!res.ok) throw new Error(`Dropbox token request failed: ${res.status} , error: ${await res.text()}`);
       const data = await res.json();
-      console.log("Token response:", data);
+      // console.log("Token response:", data);
 
       this.updateStorageData(data);
 
