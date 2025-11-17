@@ -25,12 +25,9 @@ const dropboxService = {
   async readSecrets(userPath) {
     try {
       const client = await this.getClient();
-      console.log("Reading from path:", userPath);
       const response = await client.filesDownload({ path: userPath });
-      // response.fileBinary is a Blob in browser, Buffer in Node
       const blob = response.result.fileBlob; // browser
       const text = await blob.text(); // convert blob to text
-      console.log("File content:", text);
       return text;
     } catch (error) {
       if (error.status === 409) {
@@ -41,7 +38,6 @@ const dropboxService = {
   },
 
   async writeSecrets(userPath, encryptedData) {
-    console.log("Writing to path:", userPath);
     const client = await this.getClient();
     await client.filesUpload({
       path: userPath,

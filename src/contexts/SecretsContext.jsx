@@ -17,7 +17,8 @@ const SecretsProvider = ({ children }) => {
     setError(null);
     try {
       const encryptedData = await dropboxService.readSecrets(userPath);
-      if (encryptedData) {
+      console.log("Encrypted data loaded:", encryptedData);
+      if (encryptedData && encryptedData.length > 1) {
         const decrypted = await encryptionService.decrypt(encryptedData, userPath);
         setSecrets(decrypted);
       } else {

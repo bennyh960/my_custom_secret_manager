@@ -22,7 +22,6 @@ const encryptionService = {
   },
 
   async encrypt(data, password) {
-    return JSON.stringify(data);
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const key = await this.deriveKey(password, salt);
@@ -41,7 +40,6 @@ const encryptionService = {
   },
 
   async decrypt(encryptedString, password) {
-    return JSON.parse(encryptedString);
     const encryptedData = Uint8Array.from(atob(encryptedString), (c) => c.charCodeAt(0));
 
     const salt = encryptedData.slice(0, 16);
