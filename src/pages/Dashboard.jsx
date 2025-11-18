@@ -4,6 +4,7 @@ import useSecrets from "../hooks/useSecrets";
 import SecretForm from "../components/secrets/SecretForm";
 import SecretCard from "../components/secrets/SecretCard";
 import SecretDetail from "../components/secrets/SecretDetail";
+import TagsBar from "../components/secrets/TagsBar";
 
 const Dashboard = ({ isAuthLoading }) => {
   const { secrets, loading, error, loadSecrets, addSecret, updateSecret, deleteSecret } = useSecrets();
@@ -12,6 +13,7 @@ const Dashboard = ({ isAuthLoading }) => {
   const [editingSecret, setEditingSecret] = useState(null);
   const [viewingSecret, setViewingSecret] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTag, setSelectedTag] = useState(null);
 
   useEffect(() => {
     loadSecrets();
@@ -61,7 +63,7 @@ const Dashboard = ({ isAuthLoading }) => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-6xl mx-auto px-4 py-6 sm:py-8 w-full">
+      <main className="flex-1 max-w-6xl mx-auto px-4 py-6 sm:py-8 w-full relative">
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm sm:text-base">
             {error}
@@ -72,7 +74,7 @@ const Dashboard = ({ isAuthLoading }) => {
         <div className="mb-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
           <input
             type="text"
-            placeholder="🔍 Search secrets..."
+            placeholder="Search secrets..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full"
@@ -87,6 +89,9 @@ const Dashboard = ({ isAuthLoading }) => {
             + Add Secret
           </button>
         </div>
+
+        {/* Tags */}
+        <TagsBar selectedTag={selectedTag} setSelectedTag={setSelectedTag} />
 
         {/* Secret Form */}
         {showForm && (
@@ -106,24 +111,25 @@ const Dashboard = ({ isAuthLoading }) => {
         )}
 
         {/* Loading */}
-        {loading || isAuthLoading ? (
-          <div className="text-center py-12">
+        {(loading || isAuthLoading) && (
+          <div className="text-center py-12 w-full h-full border absolute top-0 left-0 bg-white bg-opacity-75 flex items-center justify-center flex-col">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600 text-sm sm:text-base">Loading secrets...</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredSecrets.map((secret) => (
-              <SecretCard
-                key={secret.id}
-                secret={secret}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onView={setViewingSecret}
-              />
-            ))}
+            <p className="mt-4 text-gray-600 text-sm sm:text-base">
+              {loading ? "Loading your secrets..." : "Verifying authentication..."}
+            </p>
           </div>
         )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredSecrets.map((secret) => (
+            <SecretCard
+              key={secret.id}
+              secret={secret}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onView={setViewingSecret}
+            />
+          ))}
+        </div>
 
         {/* Empty State */}
         {!loading && !isAuthLoading && filteredSecrets.length === 0 && (

@@ -2,6 +2,7 @@ import { createContext, useState } from "react";
 import dropboxService from "../services/dropboxService";
 import encryptionService from "../services/encryptionService";
 import useAuth from "../hooks/useAuth";
+import { DEFAULT_SECRETS } from "../utils/constants";
 
 // ============ Secrets Context ============
 const SecretsContext = createContext();
@@ -17,12 +18,11 @@ const SecretsProvider = ({ children }) => {
     setError(null);
     try {
       const encryptedData = await dropboxService.readSecrets(userPath);
-      console.log("Encrypted data loaded:", encryptedData);
       if (encryptedData && encryptedData.length > 1) {
         const decrypted = await encryptionService.decrypt(encryptedData, userPath);
         setSecrets(decrypted);
       } else {
-        setSecrets([]);
+        setSecrets(DEFAULT_SECRETS);
       }
     } catch (err) {
       setError("Failed to load secrets: " + err.message);

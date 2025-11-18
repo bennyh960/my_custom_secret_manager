@@ -16,3 +16,11 @@ export const routes = {
   dropboxAuthCallback: "",
   test: "/test",
 };
+
+export const DEFAULT_SECRETS = {
+  secrets: [],
+  tags: ["Work", "Private", "Account", "Programs", "Social"],
+  settings: {
+    theme: "dark",
+  },
+};

@@ -1,6 +1,6 @@
 import { createContext, useCallback, useState } from "react";
 import dropboxService from "../services/dropboxService";
-import { NODE_ENV, storageMap } from "../utils/constants";
+import { DEFAULT_SECRETS, NODE_ENV, storageMap } from "../utils/constants";
 import dropboxAuthService from "../services/dropboxAuthService";
 
 // ============ Auth Context ============
@@ -59,11 +59,11 @@ const AuthProvider = ({ children }) => {
 
     if (NODE_ENV === "development" && !entryPath) {
       entryPath = `/${path}_${password}/secrets.json`;
-      await dropboxService.writeSecrets(entryPath, JSON.stringify([])); // create empty secrets file
+      await dropboxService.writeSecrets(entryPath, JSON.stringify(DEFAULT_SECRETS)); // create empty secrets file
     } else if (!entryPath) {
       throw new Error(`secrets not found for user:${path} please contact admin.`);
     }
-
+    console.log({ entryPath });
     setUserPath(entryPath);
     localStorage.removeItem(storageMap.login_retries); // reset on success
     setIsAuthenticated(true);
