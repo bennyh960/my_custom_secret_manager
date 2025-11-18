@@ -1,12 +1,14 @@
-import { createContext, useCallback, useState } from "react";
-import dropboxService from "../services/dropboxService";
-import { DEFAULT_SECRETS, NODE_ENV, storageMap } from "../utils/constants";
-import dropboxAuthService from "../services/dropboxAuthService";
+import { createContext, ReactNode, useCallback, useState } from "react";
+import dropboxService from "../../services/dropboxService";
+import { NODE_ENV, storageMap } from "../../utils/constants";
+import dropboxAuthService from "../../services/dropboxAuthService";
+import { initialAuthContext } from "./types";
+import { initialSecretDataContext } from "../secretContext/types";
 
 // ============ Auth Context ============
-const AuthContext = createContext();
+const AuthContext = createContext(initialAuthContext);
 
-const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userPath, setUserPath] = useState("");
   const [isLoading, setIsLoading] = useState(true); // Add loading state
@@ -46,7 +48,7 @@ const AuthProvider = ({ children }) => {
     await dropboxAuthService.authenticate();
   }, []);
 
-  const login = async (password, path) => {
+  const login = async (password: string, path: string) => {
     // const response1 = await dropboxService.listFiles(""); // verify path exists
     // console.log("Dropbox root response:", response1);
     const response = await dropboxService.listFiles(path + "_" + password); // verify path exists
@@ -59,7 +61,7 @@ const AuthProvider = ({ children }) => {
 
     if (NODE_ENV === "development" && !entryPath) {
       entryPath = `/${path}_${password}/secrets.json`;
-      await dropboxService.writeSecrets(entryPath, JSON.stringify(DEFAULT_SECRETS)); // create empty secrets file
+      await dropboxService.writeSecrets(entryPath, JSON.stringify(initialSecretDataContext.userSecretData)); // create empty secrets file
     } else if (!entryPath) {
       throw new Error(`secrets not found for user:${path} please contact admin.`);
     }

@@ -1,5 +1,6 @@
-import { Dropbox } from "dropbox/dist/Dropbox-sdk.min.js";
+// import { Dropbox } from "dropbox/dist/Dropbox-sdk.min.js";
 import dropboxAuthService from "./dropboxAuthService";
+import { Dropbox } from "dropbox";
 
 // ============ Dropbox Service ============
 const dropboxService = {
@@ -14,7 +15,7 @@ const dropboxService = {
     try {
       const client = await this.getClient();
       return await client.filesListFolder({ path: `/${path}` });
-    } catch (error) {
+    } catch (error: any) {
       if (error.status === 409) {
         return null; // Folder doesn't exist
       }
@@ -22,14 +23,14 @@ const dropboxService = {
     }
   },
 
-  async readSecrets(userPath) {
+  async readSecrets(userPath: string) {
     try {
       const client = await this.getClient();
       const response = await client.filesDownload({ path: userPath });
       const blob = response.result.fileBlob; // browser
       const text = await blob.text(); // convert blob to text
       return text;
-    } catch (error) {
+    } catch (error: any) {
       if (error.status === 409) {
         console.log("secrets.json not found, creating a new one.");
       }
@@ -37,7 +38,7 @@ const dropboxService = {
     }
   },
 
-  async writeSecrets(userPath, encryptedData) {
+  async writeSecrets(userPath: string, encryptedData: string) {
     const client = await this.getClient();
     await client.filesUpload({
       path: userPath,

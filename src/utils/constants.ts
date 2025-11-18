@@ -10,17 +10,9 @@ export const storageMap = {
   login_retries: "login_retries",
   login_lockout_time: "login_lockout_time",
   sessionStorage_user_path: "userPath",
-};
+} as const;
 
 export const routes = {
   dropboxAuthCallback: "",
   test: "/test",
-};
-
-export const DEFAULT_SECRETS = {
-  secrets: [],
-  tags: ["Work", "Private", "Account", "Programs", "Social"],
-  settings: {
-    theme: "dark",
-  },
 };

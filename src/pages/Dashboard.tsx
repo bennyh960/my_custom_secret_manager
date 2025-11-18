@@ -1,25 +1,28 @@
 import { useEffect, useState } from "react";
+
+import Header from "../components/common/Header";
 import useAuth from "../hooks/useAuth";
-import useSecrets from "../hooks/useSecrets";
+import useSecrets, { Secret } from "../hooks/useSecrets";
+import TagsBar from "../components/secrets/TagsBar";
 import SecretForm from "../components/secrets/SecretForm";
 import SecretCard from "../components/secrets/SecretCard";
 import SecretDetail from "../components/secrets/SecretDetail";
-import TagsBar from "../components/secrets/TagsBar";
+import LoadingSpinner from "../components/common/LoadingSpinner";
 
-const Dashboard = ({ isAuthLoading }) => {
-  const { secrets, loading, error, loadSecrets, addSecret, updateSecret, deleteSecret } = useSecrets();
+const Dashboard = ({ isAuthLoading }: { isAuthLoading: boolean }) => {
+  const { userSecretData, loadUserData, loading, error, addSecret, updateSecret, deleteSecret } = useSecrets();
   const { logout } = useAuth();
   const [showForm, setShowForm] = useState(false);
-  const [editingSecret, setEditingSecret] = useState(null);
+  const [editingSecret, setEditingSecret] = useState<Secret | null>(null);
   const [viewingSecret, setViewingSecret] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTag, setSelectedTag] = useState(null);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   useEffect(() => {
-    loadSecrets();
+    loadUserData();
   }, []);
 
-  const handleSave = async (secret) => {
+  const handleSave = async (secret: Secret) => {
     if (editingSecret) {
       await updateSecret(editingSecret.id, secret);
     } else {
@@ -29,18 +32,18 @@ const Dashboard = ({ isAuthLoading }) => {
     setEditingSecret(null);
   };
 
-  const handleEdit = (secret) => {
+  const handleEdit = (secret: Secret) => {
     setEditingSecret(secret);
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: Secret["id"]) => {
     if (confirm("Are you sure you want to delete this secret?")) {
       await deleteSecret(id);
     }
   };
 
-  const filteredSecrets = secrets.filter(
+  const filteredSecrets = userSecretData.secrets.filter(
     (s) =>
       s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -50,17 +53,7 @@ const Dashboard = ({ isAuthLoading }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">🔐 Secret Manager</h1>
-          <button
-            onClick={logout}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors w-full sm:w-auto"
-          >
-            Logout
-          </button>
-        </div>
-      </header>
+      <Header onLogout={logout} />
 
       {/* Main Content */}
       <main className="flex-1 max-w-6xl mx-auto px-4 py-6 sm:py-8 w-full relative">
@@ -90,6 +83,12 @@ const Dashboard = ({ isAuthLoading }) => {
           </button>
         </div>
 
+        {/* Loading */}
+        <LoadingSpinner
+          isLoading={loading || isAuthLoading}
+          text={loading ? "Loading your secrets..." : "Verifying authentication..."}
+        />
+
         {/* Tags */}
         <TagsBar selectedTag={selectedTag} setSelectedTag={setSelectedTag} />
 
@@ -110,15 +109,6 @@ const Dashboard = ({ isAuthLoading }) => {
           </div>
         )}
 
-        {/* Loading */}
-        {(loading || isAuthLoading) && (
-          <div className="text-center py-12 w-full h-full border absolute top-0 left-0 bg-white bg-opacity-75 flex items-center justify-center flex-col">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600 text-sm sm:text-base">
-              {loading ? "Loading your secrets..." : "Verifying authentication..."}
-            </p>
-          </div>
-        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredSecrets.map((secret) => (
             <SecretCard

@@ -1,9 +1,9 @@
-import AuthProvider from "./contexts/AuthContext";
-import SecretsProvider from "./contexts/SecretsContext";
+import { useEffect } from "react";
 import useAuth from "./hooks/useAuth";
 import Dashboard from "./pages/Dashboard";
 import Login from "./components/auth/Login";
-import { useEffect } from "react";
+import AuthProvider from "./contexts/authContext/AuthContext";
+import SecretsProvider from "./contexts/secretContext/SecretsContext";
 
 function InnerApp() {
   const { isAuthenticated, initializeAuth, isLoading } = useAuth();

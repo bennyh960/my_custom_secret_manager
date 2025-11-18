@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 const DEFAULT_TAGS = ["Work", "Private", "Account", "Programs", "Social"];
 
-export default function TagsBar({ selectedTag, setSelectedTag }) {
+interface TagsBarProps {
+  selectedTag: string | null;
+  setSelectedTag: Dispatch<SetStateAction<string | null>>;
+}
+
+export default function TagsBar({ selectedTag, setSelectedTag }: TagsBarProps) {
   const [newTag, setNewTag] = useState("");
 
   //   const addCustomTag = () => {

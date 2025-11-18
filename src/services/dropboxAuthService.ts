@@ -43,21 +43,21 @@ const dropboxAuthService = {
     window.location.href = `https://www.dropbox.com/oauth2/authorize?${params.toString()}`;
   },
 
-  updateStorageData(data) {
+  updateStorageData(data: { refresh_token: string; access_token: string; expires_in: number }) {
     localStorage.setItem(storageMap.db_refresh_token, data.refresh_token);
     localStorage.setItem(storageMap.db_access_token, data.access_token);
-    localStorage.setItem(storageMap.db_access_token_expires, Date.now() + data.expires_in * 1000);
+    localStorage.setItem(storageMap.db_access_token_expires, (Date.now() + data.expires_in * 1000).toString());
   },
 
   async getAccessToken() {
     const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
+    const code = params.get("code") ?? undefined;
 
     if (!code) {
       throw new Error("Authorization code not found in URL parameters.");
     }
 
-    const verifier = localStorage.getItem(storageMap.db_oatuh_pkce_verifier);
+    const verifier = localStorage.getItem(storageMap.db_oatuh_pkce_verifier) ?? "";
 
     const body = new URLSearchParams({
       code,
