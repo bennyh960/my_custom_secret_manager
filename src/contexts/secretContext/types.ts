@@ -12,9 +12,11 @@ interface Settings {
   theme: "light" | "dark";
 }
 
+export type Tag = { name: string; color: string };
+
 interface userSecretsData {
   secrets: Secret[];
-  tags: string[];
+  tags: Tag[];
   settings: Settings;
 }
 
@@ -26,12 +28,18 @@ export interface SecretsContextType {
   addSecret: (secret: Omit<Secret, "id">) => Promise<void>;
   updateSecret: (id: string, updatedSecret: Omit<Secret, "id">) => Promise<void>;
   deleteSecret: (id: string) => Promise<void>;
+  addTag: (tag: Tag) => Promise<void>;
+  deleteTag: (tagName: string) => Promise<void>;
+  updateTag: (oldTagName: string, newTag: Tag) => Promise<void>;
 }
 
 export const initialSecretDataContext: SecretsContextType = {
   userSecretData: {
     secrets: [],
-    tags: [],
+    tags: [
+      { name: "Private", color: "green" },
+      { name: "Work", color: "red" },
+    ],
     settings: {
       theme: "light",
     },
@@ -42,4 +50,7 @@ export const initialSecretDataContext: SecretsContextType = {
   addSecret: async () => {},
   updateSecret: async () => {},
   deleteSecret: async () => {},
+  addTag: async () => {},
+  deleteTag: async () => {},
+  updateTag: async () => {},
 };

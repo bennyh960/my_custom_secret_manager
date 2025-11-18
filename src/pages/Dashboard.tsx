@@ -17,7 +17,7 @@ const Dashboard = ({ isAuthLoading }: { isAuthLoading: boolean }) => {
   const [editingSecret, setEditingSecret] = useState<Secret | null>(null);
   const [viewingSecret, setViewingSecret] = useState<null | Secret>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   useEffect(() => {
     loadUserData();
@@ -44,12 +44,30 @@ const Dashboard = ({ isAuthLoading }: { isAuthLoading: boolean }) => {
     }
   };
 
-  const filteredSecrets = userSecretData.secrets.filter(
-    (s) =>
-      s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.url?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const toggleTags = (tagName: string) => {
+    if (tagName === "all-tags") {
+      setSelectedTags([]);
+      return;
+    }
+    if (selectedTags.includes(tagName)) {
+      setSelectedTags(selectedTags.filter((t) => t !== tagName));
+    } else {
+      setSelectedTags([...selectedTags, tagName]);
+    }
+  };
+
+  const filteredSecrets = userSecretData.secrets
+    .filter(
+      (s) =>
+        s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.url?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.notes?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter((s) => {
+      if (selectedTags.length === 0) return true;
+      return selectedTags.every((tag) => s.tags.includes(tag));
+    });
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -91,7 +109,7 @@ const Dashboard = ({ isAuthLoading }: { isAuthLoading: boolean }) => {
         />
 
         {/* Tags */}
-        <TagsBar selectedTag={selectedTag} setSelectedTag={setSelectedTag} />
+        <TagsBar selectedTags={selectedTags} onTagClick={toggleTags} allTags={userSecretData.tags} />
 
         {/* Secret Form */}
         {showForm && (
@@ -102,6 +120,7 @@ const Dashboard = ({ isAuthLoading }: { isAuthLoading: boolean }) => {
             <SecretForm
               secret={editingSecret}
               onSave={handleSave}
+              tags={userSecretData.tags}
               onCancel={() => {
                 setShowForm(false);
                 setEditingSecret(null);
@@ -118,6 +137,7 @@ const Dashboard = ({ isAuthLoading }: { isAuthLoading: boolean }) => {
               onEdit={handleEdit}
               onDelete={handleDelete}
               onView={setViewingSecret}
+              tags={userSecretData.tags}
             />
           ))}
         </div>
@@ -132,7 +152,9 @@ const Dashboard = ({ isAuthLoading }: { isAuthLoading: boolean }) => {
         )}
       </main>
 
-      {viewingSecret && <SecretDetail secret={viewingSecret} onClose={() => setViewingSecret(null)} />}
+      {viewingSecret && (
+        <SecretDetail secret={viewingSecret} onClose={() => setViewingSecret(null)} tags={userSecretData.tags} />
+      )}
     </div>
   );
 };

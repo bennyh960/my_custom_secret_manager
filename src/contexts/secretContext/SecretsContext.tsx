@@ -20,6 +20,7 @@ const SecretsProvider = ({ children }: { children: ReactNode }) => {
       const encryptedData = await dropboxService.readSecrets(userPath);
       if (encryptedData && encryptedData.length > 1) {
         const decrypted = await encryptionService.decrypt(encryptedData, userPath);
+        console.log("Decrypted Data:", decrypted);
         setUserSecretData(decrypted);
       } else {
         setUserSecretData(initialSecretDataContext.userSecretData);
@@ -45,6 +46,7 @@ const SecretsProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // CRUD Operations on Secrets
   const addSecret = async (secret: Omit<Secret, "id">) => {
     const newSecret = { ...secret, id: Date.now().toString() };
     await saveData({ ...userSecretData, secrets: [...userSecretData.secrets, newSecret] });
@@ -60,9 +62,50 @@ const SecretsProvider = ({ children }: { children: ReactNode }) => {
     await saveData({ ...userSecretData, secrets: newSecrets });
   };
 
+  // CRUD Operations on Tags could be added similarly
+  const addTag = async (tag: { name: string; color: string }) => {
+    const tagMap = new Map(
+      userSecretData.tags.map((t) => [t.name, t]) // existing tags
+    );
+
+    tagMap.set(tag.name, tag);
+    const newTags = Array.from(tagMap.values());
+
+    await saveData({ ...userSecretData, tags: newTags });
+  };
+
+  const deleteTag = async (tagName: string) => {
+    const newTags = userSecretData.tags.filter((t) => t.name !== tagName);
+    const newSecrets = userSecretData.secrets.map((s) => ({
+      ...s,
+      tags: s.tags.filter((t) => t !== tagName),
+    }));
+    await saveData({ ...userSecretData, secrets: newSecrets, tags: newTags });
+  };
+
+  const updateTag = async (oldTagName: string, newTag: { name: string; color: string }) => {
+    const newTags = userSecretData.tags.map((t) => (t.name === oldTagName ? newTag : t));
+    const newSecrets = userSecretData.secrets.map((s) => ({
+      ...s,
+      tags: s.tags.map((t) => (t === oldTagName ? newTag.name : t)),
+    }));
+    await saveData({ ...userSecretData, secrets: newSecrets, tags: newTags });
+  };
+
   return (
     <SecretsContext.Provider
-      value={{ userSecretData, loading, error, loadUserData, addSecret, updateSecret, deleteSecret }}
+      value={{
+        userSecretData,
+        loading,
+        error,
+        loadUserData,
+        addSecret,
+        updateSecret,
+        deleteSecret,
+        addTag,
+        deleteTag,
+        updateTag,
+      }}
     >
       {children}
     </SecretsContext.Provider>

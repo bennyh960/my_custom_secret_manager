@@ -1,11 +1,17 @@
+import { SecretsContextType } from "./contexts/secretContext/types";
 import dropboxService from "./services/dropboxService";
 import encryptionService from "./services/encryptionService";
 
 const playGround = async () => {
-  console.log("This is the playground module.");
-  const userPath = "/benny_6711904bh/secrets.json";
-  const decryptedSecrets = await getSecrets(userPath);
-  console.log("Decrypted secrets tags:", decryptedSecrets);
+  // console.log("This is the playground module.");
+  // const userPath = "/benny_6711904bh/secrets.json";
+  // const decryptedSecrets: SecretsContextType["userSecretData"] = await getUserData(userPath);
+  // console.log("Decrypted secrets tags:", decryptedSecrets.tags);
+  // const userTags = [
+  //   { name: "Private", color: "green" },
+  //   { name: "Work", color: "red" },
+  // ];
+  // decryptedSecrets.tags = userTags;
   // const updatedSecretesWithTags = decryptedSecrets.map((s) => {
   //   return { ...s, tags: [] };
   // });
@@ -17,10 +23,10 @@ const playGround = async () => {
   //     theme: "dark",
   //   },
   // };
-  // await saveSecrets(userSecrets, userPath);
+  // await saveUserData(decryptedSecrets, userPath);
 };
 
-const getSecrets = async (userPath: string) => {
+const getUserData = async (userPath: string) => {
   const encryptedData = await dropboxService.readSecrets(userPath);
   console.log("Encrypted data loaded:", encryptedData);
 
@@ -28,9 +34,9 @@ const getSecrets = async (userPath: string) => {
   return decrypted;
 };
 
-// const saveSecrets = async (secrets, userPath) => {
-//   const encrypted = await encryptionService.encrypt(secrets, userPath);
-//   await dropboxService.writeSecrets(userPath, encrypted);
-// };
+const saveUserData = async (secrets: SecretsContextType["userSecretData"], userPath: string) => {
+  const encrypted = await encryptionService.encrypt(secrets, userPath);
+  await dropboxService.writeSecrets(userPath, encrypted);
+};
 
 // export default playGround;

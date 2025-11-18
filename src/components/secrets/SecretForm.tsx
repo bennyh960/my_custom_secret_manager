@@ -1,17 +1,31 @@
 import { CSSProperties, KeyboardEvent, useCallback, useState } from "react";
 import { Secret } from "../../contexts/secretContext/types";
+import DrawTags from "../common/DrawTags";
+import { EyeIcon, EyeSlashIcon, TagIcon } from "@heroicons/react/24/outline";
 
 interface ISecretFormProps {
   secret: Secret | null;
   onSave: (secret: Secret) => Promise<void>;
   onCancel: () => void;
+  tags: { name: string; color: string }[];
 }
 
-const SecretForm = ({ secret, onSave, onCancel }: ISecretFormProps) => {
+const SecretForm = ({ secret, onSave, onCancel, tags }: ISecretFormProps) => {
   const [formData, setFormData] = useState<Secret>(
     secret || { title: "", username: "", password: "", url: "", notes: "", tags: [] }
   );
   const [dirStyle, setDirStyle] = useState<CSSProperties["direction"]>("ltr");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const handleOnTagClick = (tagName: string) => {
+    let updatedTags = [...formData.tags];
+    if (updatedTags.includes(tagName)) {
+      updatedTags = updatedTags.filter((t) => t !== tagName);
+    } else {
+      updatedTags.push(tagName);
+    }
+    setFormData({ ...formData, tags: updatedTags });
+  };
 
   const handleSubmit = () => {
     if (formData.title && formData.password) {
@@ -63,15 +77,26 @@ const SecretForm = ({ secret, onSave, onCancel }: ISecretFormProps) => {
         />
       </div>
 
-      <div>
+      <div className="relative w-full">
         <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
         <input
-          type="password"
+          type={isPasswordVisible ? "text" : "password"}
           onKeyDown={changeInputDirection}
           value={formData.password}
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+          // note: pr-10 to make space for the icon
         />
+        <div
+          className="absolute inset-y-11 right-3 flex items-center"
+          onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+        >
+          {isPasswordVisible ? (
+            <EyeSlashIcon width={16} height={16} className="text-gray-400 cursor-pointer" />
+          ) : (
+            <EyeIcon width={16} height={16} className="text-gray-400 cursor-pointer" />
+          )}
+        </div>
       </div>
 
       <div>
@@ -94,6 +119,15 @@ const SecretForm = ({ secret, onSave, onCancel }: ISecretFormProps) => {
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           rows={3}
         />
+      </div>
+      <div>
+        <label className="text-sm font-medium flex text-gray-700 my-2 gap-2">
+          <span>
+            <TagIcon width={14} height={14} />
+          </span>
+          <span>Tags</span>
+        </label>
+        <DrawTags tagsData={tags} onClick={handleOnTagClick} selectedTags={formData.tags} />
       </div>
 
       <div className="flex gap-3 pt-4">
