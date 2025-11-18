@@ -23,7 +23,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // SCENARIO 1: Returning from Dropbox OAuth (has code in URL)
     if (code) {
-      console.log("Handling OAuth callback...");
       await dropboxAuthService.getAccessToken();
 
       // Clean URL after successful token exchange
@@ -35,7 +34,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // SCENARIO 2: User already authenticated (has valid token)
     if (accessToken && storedUserPath) {
-      console.log("User already authenticated");
+      console.warn("User already authenticated");
       setUserPath(storedUserPath);
       setIsAuthenticated(true);
       setIsLoading(false);
@@ -43,7 +42,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // SCENARIO 3: No token, no code → First visit, need to authenticate
-    console.log("No authentication found, redirecting to Dropbox...");
+    // console.log("No authentication found, redirecting to Dropbox...");
     setIsLoading(false);
     await dropboxAuthService.authenticate();
   }, []);
@@ -65,7 +64,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     } else if (!entryPath) {
       throw new Error(`secrets not found for user:${path} please contact admin.`);
     }
-    console.log({ entryPath });
     setUserPath(entryPath);
     localStorage.removeItem(storageMap.login_retries); // reset on success
     setIsAuthenticated(true);

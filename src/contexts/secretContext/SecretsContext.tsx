@@ -20,7 +20,7 @@ const SecretsProvider = ({ children }: { children: ReactNode }) => {
       const encryptedData = await dropboxService.readSecrets(userPath);
       if (encryptedData && encryptedData.length > 1) {
         const decrypted = await encryptionService.decrypt(encryptedData, userPath);
-        console.log("Decrypted Data:", decrypted);
+        // console.log("Decrypted Data:", decrypted);
         setUserSecretData(decrypted);
       } else {
         setUserSecretData(initialSecretDataContext.userSecretData);

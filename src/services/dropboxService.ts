@@ -32,7 +32,7 @@ const dropboxService = {
       return text;
     } catch (error: any) {
       if (error.status === 409) {
-        console.log("secrets.json not found, creating a new one.");
+        console.error("status 409 : secrets.json not found.");
       }
       throw error;
     }
