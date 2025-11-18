@@ -1,5 +1,7 @@
+import { SecretsContextType } from "../contexts/secretContext/types";
+
 const encryptionService = {
-  async deriveKey(password, salt) {
+  async deriveKey(password: string, salt: Uint8Array<ArrayBuffer>) {
     const encoder = new TextEncoder();
     const passwordBuffer = encoder.encode(password);
     const importedKey = await crypto.subtle.importKey("raw", passwordBuffer, "PBKDF2", false, [
@@ -21,7 +23,7 @@ const encryptionService = {
     );
   },
 
-  async encrypt(data, password) {
+  async encrypt(data: SecretsContextType["userSecretData"], password: string) {
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const key = await this.deriveKey(password, salt);
@@ -39,7 +41,7 @@ const encryptionService = {
     return btoa(String.fromCharCode(...result));
   },
 
-  async decrypt(encryptedString, password) {
+  async decrypt(encryptedString: string, password: string) {
     const encryptedData = Uint8Array.from(atob(encryptedString), (c) => c.charCodeAt(0));
 
     const salt = encryptedData.slice(0, 16);

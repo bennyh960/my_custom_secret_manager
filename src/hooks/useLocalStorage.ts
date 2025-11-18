@@ -8,7 +8,7 @@ type StorageValueMap = {
   db_refresh_token: string;
   db_access_token: string;
   db_access_token_expires: number;
-  login_retries: number;
+  login_retries: { count: number; time: number };
   login_lockout_time: number;
   sessionStorage_user_path: string;
 };

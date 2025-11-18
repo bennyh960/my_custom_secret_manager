@@ -1,8 +1,17 @@
-import { useCallback, useState } from "react";
+import { CSSProperties, KeyboardEvent, useCallback, useState } from "react";
+import { Secret } from "../../contexts/secretContext/types";
 
-const SecretForm = ({ secret, onSave, onCancel }) => {
-  const [formData, setFormData] = useState(secret || { title: "", username: "", password: "", url: "", notes: "" });
-  const [dirStyle, setDirStyle] = useState("ltr");
+interface ISecretFormProps {
+  secret: Secret | null;
+  onSave: (secret: Secret) => Promise<void>;
+  onCancel: () => void;
+}
+
+const SecretForm = ({ secret, onSave, onCancel }: ISecretFormProps) => {
+  const [formData, setFormData] = useState<Secret>(
+    secret || { title: "", username: "", password: "", url: "", notes: "", tags: [] }
+  );
+  const [dirStyle, setDirStyle] = useState<CSSProperties["direction"]>("ltr");
 
   const handleSubmit = () => {
     if (formData.title && formData.password) {
@@ -12,17 +21,19 @@ const SecretForm = ({ secret, onSave, onCancel }) => {
     }
   };
 
-  const changeInputDirection = useCallback((e) => {
+  const changeInputDirection = useCallback((e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (!e.ctrlKey) return;
 
     // right shift + ctrl
     if (e.shiftKey && e.code === "ShiftRight") {
+      // @ts-ignore
       e.target.style.direction = "rtl";
       setDirStyle("rtl");
     }
 
     // left shift + ctrl
     if (e.shiftKey && e.code === "ShiftLeft") {
+      // @ts-ignore
       e.target.style.direction = "ltr";
       setDirStyle("ltr");
     }
@@ -81,7 +92,7 @@ const SecretForm = ({ secret, onSave, onCancel }) => {
           onKeyDown={changeInputDirection}
           onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          rows="3"
+          rows={3}
         />
       </div>
 

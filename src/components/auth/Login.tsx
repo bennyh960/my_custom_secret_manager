@@ -1,7 +1,7 @@
-import { useState } from "react";
-import useAuth from "../../hooks/useAuth";
-import { storageMap } from "../../utils/constants";
+import { KeyboardEvent, useState } from "react";
 import useLocalStorage from "../../hooks/useLocalStorage";
+import { storageMap } from "../../utils/constants";
+import useAuth from "../../hooks/useAuth";
 
 const MAX_RETRIES = 5;
 const RETRY_DELAY_MINUTES = 10;
@@ -16,7 +16,7 @@ const Login = () => {
     if (isValidByMaxRetries() && password && userPath) {
       try {
         return await login(password, userPath);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Login error:", error);
         alert("Login failed: " + error.message);
         setRetries((p) => ({ count: p.count + 1, time: new Date().getTime() }));
@@ -41,7 +41,7 @@ const Login = () => {
     return true;
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSubmit();
     }

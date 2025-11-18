@@ -1,11 +1,11 @@
 export interface Secret {
-  id: string;
+  id?: string;
   title: string;
-  username?: string;
-  password?: string;
-  url?: string;
-  notes?: string;
-  tags?: string[];
+  username: string;
+  password: string;
+  url: string;
+  notes: string;
+  tags: string[];
 }
 
 interface Settings {

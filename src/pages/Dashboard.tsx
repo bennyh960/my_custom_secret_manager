@@ -2,19 +2,20 @@ import { useEffect, useState } from "react";
 
 import Header from "../components/common/Header";
 import useAuth from "../hooks/useAuth";
-import useSecrets, { Secret } from "../hooks/useSecrets";
+import useSecrets from "../hooks/useSecrets";
 import TagsBar from "../components/secrets/TagsBar";
 import SecretForm from "../components/secrets/SecretForm";
 import SecretCard from "../components/secrets/SecretCard";
 import SecretDetail from "../components/secrets/SecretDetail";
 import LoadingSpinner from "../components/common/LoadingSpinner";
+import { Secret } from "../contexts/secretContext/types";
 
 const Dashboard = ({ isAuthLoading }: { isAuthLoading: boolean }) => {
   const { userSecretData, loadUserData, loading, error, addSecret, updateSecret, deleteSecret } = useSecrets();
   const { logout } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [editingSecret, setEditingSecret] = useState<Secret | null>(null);
-  const [viewingSecret, setViewingSecret] = useState(null);
+  const [viewingSecret, setViewingSecret] = useState<null | Secret>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
@@ -24,7 +25,7 @@ const Dashboard = ({ isAuthLoading }: { isAuthLoading: boolean }) => {
 
   const handleSave = async (secret: Secret) => {
     if (editingSecret) {
-      await updateSecret(editingSecret.id, secret);
+      await updateSecret(editingSecret.id!, secret);
     } else {
       await addSecret(secret);
     }
@@ -37,7 +38,7 @@ const Dashboard = ({ isAuthLoading }: { isAuthLoading: boolean }) => {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: Secret["id"]) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this secret?")) {
       await deleteSecret(id);
     }

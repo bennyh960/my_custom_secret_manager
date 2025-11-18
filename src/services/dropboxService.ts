@@ -27,7 +27,7 @@ const dropboxService = {
     try {
       const client = await this.getClient();
       const response = await client.filesDownload({ path: userPath });
-      const blob = response.result.fileBlob; // browser
+      const blob = (response.result as any).fileBlob as Blob; // browser
       const text = await blob.text(); // convert blob to text
       return text;
     } catch (error: any) {
@@ -43,7 +43,7 @@ const dropboxService = {
     await client.filesUpload({
       path: userPath,
       contents: encryptedData,
-      mode: "overwrite",
+      mode: { ".tag": "overwrite" },
     });
   },
 };

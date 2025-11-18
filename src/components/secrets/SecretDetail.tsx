@@ -3,8 +3,14 @@ import EyeIcon from "../../assets/eyeIcon.svg";
 import copyIcon from "../../assets/copyIcon.svg";
 import copyCheckIcon from "../../assets/copyCheckIcon.svg";
 import EyeCloseIcon from "../../assets/eyeCloseIcon.svg";
+import { Secret } from "../../contexts/secretContext/types";
 
-const SecretDetail = ({ secret, onClose }) => {
+interface ISecretDetailProps {
+  secret: Secret;
+  onClose: () => void;
+}
+
+const SecretDetail = ({ secret, onClose }: ISecretDetailProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [copied, setCopied] = useState(false);
 
